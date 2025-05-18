@@ -1,7 +1,7 @@
 from flask_restful import Api, Resource, reqparse
 from models import db, User, Role
 from flask_security import auth_required, roles_accepted, roles_required, current_user
-from flask import current_app as app, jsonify, request
+from flask import current_app as app, jsonify, render_template, request
 from werkzeug.security import generate_password_hash,check_password_hash
 from flask_login import login_user,logout_user
 
@@ -73,3 +73,59 @@ class Register(Resource):
         return {
             "Message":"User already exists"
         },400
+
+class Logout(Resource):
+    @auth_required('token')
+    @roles_accepted('admin','user')
+    def get(self):
+        logout_user()
+        return jsonify({
+            "message":"User Logout"
+        }),200
+    
+class AdminHome(Resource):
+    @auth_required('token')
+    @roles_required('admin')
+    def get(self):
+        return {
+            "Message":"Welcome Admin"
+        },200
+    
+class UserHome(Resource):
+    @auth_required('token')
+    @roles_required('user')
+    def get(self):
+        return {
+            "Message":"Welcome User"
+        },200
+    
+class Userlist(Resource):
+    @auth_required('token')
+    @roles_required('admin')
+    def get(self):
+        users=User.query.filter(User.id>1).all()
+        return [{
+            "id":user.id,
+            "username":user.username,
+            "email":user.email,
+            "dob":user.dob,
+            "active":user.active,
+            } 
+        for user in users],200
+    
+class ChangeUserStatus(Resource):
+    @auth_required('token')
+    @roles_required('admin')
+    def post(self,user_id):
+        data=request.get_json()
+        new_status=data.get('active')
+        user=User.query.filter_by(id=user_id).first()
+        if not user:
+            return {
+                "Message":"User Not Found"
+            },404
+        user.active=new_status
+        db.session.commit()
+        return {
+            "Message":"user status updated"
+        },200
