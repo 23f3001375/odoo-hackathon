@@ -2,7 +2,7 @@ export default {
   template: `
     <nav class="navbar navbar-expand-lg" style="background-color:#222222; width: 100%;">
       <div class="container-fluid">
-        <a class="navbar-brand text-white fw-bold" href="#">Quiz Masters</a>
+        <a class="navbar-brand text-white fw-bold" href="#">Community Pulse</a>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">

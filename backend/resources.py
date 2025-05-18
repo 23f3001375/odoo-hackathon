@@ -9,9 +9,9 @@ api=Api()
 parser= reqparse.RequestParser()
 
 class Login(Resource):
-    def get(self):
+    def post(self):
         data=request.get_json()
-        if not data['email'] or data['password']:
+        if not data['email'] or not data['password']:
             return {
                 "Message":"Both fields are required"
             },400
@@ -26,6 +26,7 @@ class Login(Resource):
             },403
         if user:
             if check_password_hash(user.password,data['password']):
+                logout_user()
                 if current_user.is_authenticated:
                     return {
                         "Message":"User already logged in"
