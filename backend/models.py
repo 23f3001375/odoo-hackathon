@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_security import UserMixin, RoleMixin
+import datetime
 db=SQLAlchemy()
 
 class User(db.Model,UserMixin):
@@ -24,3 +25,28 @@ class UserRoles(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id=db.Column(db.Integer,db.ForeignKey("users.id"))
     role_id=db.Column(db.Integer,db.ForeignKey("roles.id"))
+
+class Event(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text)
+    category = db.Column(db.String(50))
+    location = db.Column(db.String(200))
+    registration_start_date = db.Column(db.DateTime, nullable=False)
+    event_start_date = db.Column(db.DateTime, nullable=False)
+    status = db.Column(db.String(20), default='pending') 
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    request= db.relationship('EventRequest', backref='event', lazy=True)
+
+
+
+class EventRequest(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(15), nullable=False)
+    number_of_people = db.Column(db.Integer, default=1)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+  
