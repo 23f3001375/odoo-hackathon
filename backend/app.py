@@ -1,9 +1,9 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_security import SQLAlchemyUserDatastore,Security
 from werkzeug.security import generate_password_hash,check_password_hash
 from config import DevelopmentConfig
 from models import db,User,Role
-from resources import api,Login,Register
+from resources import api,Login,Register,Userlist,ChangeUserStatus,UserHome,AdminHome,Logout
 
 def create_app():
     app=Flask(__name__,template_folder="../frontend/templates",static_folder="../frontend/static")
@@ -28,8 +28,17 @@ with app.app_context():
                                            password=generate_password_hash("admin_quiz"),roles=['admin'])
     db.session.commit()
 
+@app.route('/')
+def home_webpage():
+    return render_template('index.html')
+
 api.add_resource(Login,'/api/login')
 api.add_resource(Register,'/api/register')
+api.add_resource(Logout,'/api/logout')
+api.add_resource(UserHome,'/api/user')
+api.add_resource(AdminHome,'/api/admin')
+api.add_resource(Userlist,'/api/admin/userlist')
+api.add_resource(ChangeUserStatus,'/api/admin/changestatus/<int:user_id>')
 
 if __name__=="__main__":
     app.run()
